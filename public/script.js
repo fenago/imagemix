@@ -245,7 +245,7 @@ class GeminiImageEditor {
                 formData.append('prompt', this.childPrompt.value.trim());
             }
 
-            const response = await fetch('/api/generate-child', {
+            const response = await fetch('/.netlify/functions/generate-child', {
                 method: 'POST',
                 body: formData
             });
@@ -281,7 +281,7 @@ class GeminiImageEditor {
             formData.append('image', this.selectedFile);
             formData.append('prompt', this.manipulatePrompt.value.trim());
 
-            const response = await fetch('/api/manipulate-image', {
+            const response = await fetch('/.netlify/functions/manipulate-image', {
                 method: 'POST',
                 body: formData
             });
@@ -314,7 +314,7 @@ class GeminiImageEditor {
         this.hideMessages();
 
         try {
-            const response = await fetch('/api/generate-image', {
+            const response = await fetch('/.netlify/functions/generate-image', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -347,12 +347,17 @@ class GeminiImageEditor {
                 if (item.type === 'image') {
                     const resultItem = document.createElement('div');
                     resultItem.className = 'result-item';
+                    
+                    // For Netlify functions, we get base64 data instead of URLs
+                    const imageUrl = item.url || `data:${item.mimeType};base64,${item.data}`;
+                    const downloadUrl = item.url || `data:${item.mimeType};base64,${item.data}`;
+                    
                     resultItem.innerHTML = `
-                        <img src="${item.url}" alt="Generated Image ${index + 1}" class="result-image">
+                        <img src="${imageUrl}" alt="Generated Image ${index + 1}" class="result-image">
                         <div class="result-info">
                             <h4>${title} Result ${index + 1}</h4>
                             <p><strong>Prompt:</strong> ${result.prompt}</p>
-                            <a href="${item.url}" download="${item.filename}" class="btn" style="margin-top: 10px; font-size: 0.9rem; padding: 8px 16px;">
+                            <a href="${downloadUrl}" download="${item.filename}" class="btn" style="margin-top: 10px; font-size: 0.9rem; padding: 8px 16px;">
                                 <i class="fas fa-download"></i> Download
                             </a>
                         </div>
